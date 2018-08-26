@@ -1,0 +1,35 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "semicolon": [
+            true,
+            "never"
+        ],
+        // "interface-name": [
+        //     true,
+        //     "never-prefix"
+        // ],
+        "trailing-comma": [
+            true,
+            {
+                "multiline": "always",
+                "singleline": "never"
+            }
+        ],
+        "no-console": false,
+        "typedef": [
+            true,
+            "arrow-call-signature",
+            "arrow-parameter",
+            "call-signature",
+            "member-variable-declaration",
+            "parameter",
+            "property-declaration"
+        ]
+    },
+    "rulesDirectory": []
+}
