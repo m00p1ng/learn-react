@@ -3,7 +3,7 @@ import { Link } from '@reach/router'
 import { addStack } from '../actions'
 import { connect } from 'react-redux';
 
-class StackForm extends Component {
+export class StackForm extends Component {
   state = {
     title: '',
     cards: [],
