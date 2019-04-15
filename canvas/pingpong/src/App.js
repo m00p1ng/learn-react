@@ -17,6 +17,7 @@ function GameCanvas() {
   const BRICK_COLS = 10
   const BRICK_ROWS = 14
   let brickGrid = new Array(BRICK_COLS * BRICK_ROWS)
+  let bricksLeft = 0
 
   const PADDLE_WIDTH = 100
   const PADDLE_THICKNESS = 10
@@ -31,6 +32,7 @@ function GameCanvas() {
 
     canvas.addEventListener('mousemove', updateMousePos)
     brickReset()
+    ballReset()
   }, [])
 
   const updateMousePos = (e) => {
@@ -48,8 +50,14 @@ function GameCanvas() {
   }
 
   const brickReset = () => {
-    for (let i = 0; i < BRICK_COLS * BRICK_ROWS; i++) {
+    bricksLeft = 0
+    let i
+    for (i = 0; i < 3 * BRICK_COLS; i++) {
+      brickGrid[i] = false
+    }
+    for (; i < BRICK_COLS * BRICK_ROWS; i++) {
       brickGrid[i] = true
+      bricksLeft++
     }
   }
 
@@ -62,10 +70,10 @@ function GameCanvas() {
     ballX += ballSpeedX
     ballY += ballSpeedY
 
-    if (ballX < 0 || ballX > canvas.width) {
+    if ((ballX < 0 && ballSpeedX < 0.0) || (ballX > canvas.width && ballSpeedX > 0.0)) {
       ballSpeedX *= -1
     }
-    if (ballY < 0) {
+    if (ballY < 0 && ballSpeedY < 0.0) {
       ballSpeedY *= -1
     }
     if (ballY > canvas.height) {
@@ -73,18 +81,53 @@ function GameCanvas() {
     }
   }
 
+  const isBrickAtColRow = (col, row) => {
+    if (col >= 0 && col < BRICK_COLS &&
+      row >= 0 && row < BRICK_ROWS) {
+      const brickIndexUnderCoord = colRowToArrayIndex(col, row)
+      return brickGrid[brickIndexUnderCoord]
+    } else {
+      return false
+    }
+  }
+
   const ballBrickHandling = () => {
     const ballBrickCol = Math.floor(ballX / BRICK_W)
     const ballBrickRow = Math.floor(ballY / BRICK_H)
-    const brickIndexUnderBall = rowColToArrayIndex(ballBrickCol, ballBrickRow)
+    const brickIndexUnderBall = colRowToArrayIndex(ballBrickCol, ballBrickRow)
     colorText(`${ballBrickCol},${ballBrickRow}:${brickIndexUnderBall}`, mouseX, mouseY, 'yellow')
 
     if (
       ballBrickCol >= 0 && ballBrickCol < BRICK_COLS &&
       ballBrickRow >= 0 && ballBrickRow < BRICK_ROWS) {
-      if (brickGrid[brickIndexUnderBall]) {
+      if (isBrickAtColRow(ballBrickCol, ballBrickRow)) {
         brickGrid[brickIndexUnderBall] = false
-        ballSpeedY *= -1
+        bricksLeft--
+
+        const prevBallX = ballX - ballSpeedX
+        const prevBallY = ballY - ballSpeedY
+        const prevBrickCol = Math.floor(prevBallX / BRICK_W)
+        const prevBrickRow = Math.floor(prevBallY / BRICK_H)
+
+        let bothTestFailed = true
+
+        if (prevBrickCol !== ballBrickCol) {
+          if (isBrickAtColRow(prevBrickCol, ballBrickRow) === false) {
+            ballSpeedX *= -1
+            bothTestFailed = false
+          }
+        }
+        if (prevBrickRow !== ballBrickRow) {
+          if (isBrickAtColRow(ballBrickCol, prevBrickRow) === false) {
+            ballSpeedY *= -1
+            bothTestFailed = false
+          }
+        }
+
+        if (bothTestFailed) {
+          ballSpeedX *= -1
+          ballSpeedY *= -1
+        }
       }
     }
   }
@@ -104,6 +147,10 @@ function GameCanvas() {
       let centerOfPaddleX = paddleX + PADDLE_WIDTH / 2
       let ballDistFromPaddleCenterX = ballX - centerOfPaddleX
       ballSpeedX = ballDistFromPaddleCenterX * 0.35
+
+      if (bricksLeft === 0) {
+        brickReset()
+      }
     }
   }
 
@@ -113,14 +160,14 @@ function GameCanvas() {
     ballPaddleHandling()
   }
 
-  const rowColToArrayIndex = (col, row) => {
+  const colRowToArrayIndex = (col, row) => {
     return col + BRICK_COLS * row
   }
 
   const drawBricks = () => {
     for (let eachRow = 0; eachRow < BRICK_ROWS; eachRow++) {
       for (let eachCol = 0; eachCol < BRICK_COLS; eachCol++) {
-        const arrayIndex = rowColToArrayIndex(eachCol, eachRow)
+        const arrayIndex = colRowToArrayIndex(eachCol, eachRow)
         if (brickGrid[arrayIndex]) {
           colorRect(BRICK_W * eachCol, BRICK_H * eachRow, BRICK_W - BRICK_GAP, BRICK_H - BRICK_GAP, 'blue')
         }
