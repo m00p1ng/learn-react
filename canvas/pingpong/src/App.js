@@ -28,7 +28,8 @@ function GameCanvas() {
     const rect = canvas.getBoundingClientRect()
     const root = document.documentElement
 
-    const mouseX = e.clientX - rect.left - root.scrollLeft
+    mouseX = e.clientX - rect.left - root.scrollLeft
+    mouseY = e.clientY - rect.top - root.scrollTop
     paddleX = mouseX - PADDLE_WIDTH / 2
   }
 
