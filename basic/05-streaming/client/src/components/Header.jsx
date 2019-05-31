@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from '@reach/router'
+import GoogleAuth from './GoogleAuth'
 
 const Header = () => (
   <nav className="navbar is-success" role="navigation" aria-label="main navigation">
@@ -8,11 +9,14 @@ const Header = () => (
         Streamy
       </Link>
     </div>
-    <div id="navbarBasicExample" class="navbar-menu">
-      <div class="navbar-end">
+    <div id="navbarBasicExample" className="navbar-menu">
+      <div className="navbar-end">
         <Link to="/" className="navbar-item">
           All Stream
         </Link>
+        <div className="navbar-item">
+          <GoogleAuth />
+        </div>
       </div>
     </div>
   </nav>
