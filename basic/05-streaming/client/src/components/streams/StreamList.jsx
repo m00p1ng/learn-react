@@ -22,8 +22,18 @@ function StreamList({ streams, currentUserId, isSignedIn, fetchStreams }) {
     if (stream.userId === currentUserId) {
       return (
         <div className="buttons">
-          <Link to={`/streams/edit/${stream.id}`} className="button is-warning">Edit</Link>
-          <button className="button is-danger">Delete</button>
+          <Link
+            to={`/streams/edit/${stream.id}`}
+            className="button is-warning"
+          >
+            Edit
+          </Link>
+          <Link
+            to={`/streams/delete/${stream.id}`}
+            className="button is-danger"
+          >
+            Delete
+          </Link>
         </div>
       )
     }

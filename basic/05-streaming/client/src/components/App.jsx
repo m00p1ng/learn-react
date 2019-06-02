@@ -17,7 +17,7 @@ function App() {
           <StreamList path="/" />
           <StreamCreate path="/streams/new" />
           <StreamEdit path="/streams/edit/:id" />
-          <StreamDelete path="/streams/delete" />
+          <StreamDelete path="/streams/delete/:id" />
           <StreamShow path="/streams/show" />
         </Router>
       </div>
