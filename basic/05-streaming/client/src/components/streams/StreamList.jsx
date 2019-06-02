@@ -43,7 +43,9 @@ function StreamList({ streams, currentUserId, isSignedIn, fetchStreams }) {
     return streams.map(stream => {
       return (
         <div className="list-item" key={stream.id}>
-          {stream.title} - {stream.description}
+          <Link to={`/streams/${stream.id}`}>
+            {stream.title} - {stream.description}
+          </Link>
           {renderAdmin(stream)}
         </div>
       )
