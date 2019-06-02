@@ -1,11 +1,11 @@
 import React from 'react';
 import { Router } from "@reach/router"
 
-import StreamCreate from './steams/StreamCreate'
-import StreamEdit from './steams/StreamEdit'
-import StreamDelete from './steams/StreamDelete'
-import StreamList from './steams/StreamList'
-import StreamShow from './steams/StreamShow'
+import StreamCreate from './streams/StreamCreate'
+import StreamEdit from './streams/StreamEdit'
+import StreamDelete from './streams/StreamDelete'
+import StreamList from './streams/StreamList'
+import StreamShow from './streams/StreamShow'
 import Header from './Header'
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
         <Router>
           <StreamList path="/" />
           <StreamCreate path="/streams/new" />
-          <StreamEdit path="/streams/edit" />
+          <StreamEdit path="/streams/edit/:id" />
           <StreamDelete path="/streams/delete" />
           <StreamShow path="/streams/show" />
         </Router>
