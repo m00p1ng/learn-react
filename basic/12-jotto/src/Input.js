@@ -31,7 +31,9 @@ const Input = ({ success }) => {
 }
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    success: state.success
+  }
 }
 
 export default connect(mapStateToProps)(Input)
