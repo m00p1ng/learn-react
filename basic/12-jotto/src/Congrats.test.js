@@ -6,7 +6,7 @@ import Congrats from './Congrats'
 
 
 
-const defaultProps = { sucess: false }
+const defaultProps = { success: false }
 
 /**
  * Factory function to create a ShallowWrapper for the Congrats Component.

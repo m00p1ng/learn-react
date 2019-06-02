@@ -22,7 +22,7 @@ const GuessWords = (props) => {
           <thead className="thead-light">
             <tr>
               <th>Guess</th>
-              <th>Maching Letters</th>
+              <th>Matching Letters</th>
             </tr>
           </thead>
           <tbody>
