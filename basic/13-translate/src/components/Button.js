@@ -3,8 +3,8 @@ import LanguageContext from '../contexts/LanguageContext'
 import ColorContext from '../contexts/ColorContext'
 
 function Button() {
-  const renderSubmit = (lang) => {
-    return lang === 'english' ? 'Submit' : 'Voorleggan'
+  const renderSubmit = ({ language }) => {
+    return language === 'english' ? 'Submit' : 'Voorleggan'
   }
 
   const renderButton = (color) => {

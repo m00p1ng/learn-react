@@ -3,7 +3,7 @@ import LanguageContext from '../contexts/LanguageContext'
 
 function Field() {
   const context = useContext(LanguageContext)
-  const text = context === 'english'
+  const text = context.language === 'english'
     ? 'Name'
     : 'Naam'
 
