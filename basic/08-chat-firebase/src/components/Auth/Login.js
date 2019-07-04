@@ -10,7 +10,7 @@ import {
   Icon,
 } from "semantic-ui-react";
 
-import firebase from 'firebase'
+import firebase from '../../firebase'
 
 export default function Login() {
   const [email, setEmail] = useState("");
