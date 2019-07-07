@@ -12,39 +12,59 @@ import {
 
 import firebase from '../../firebase'
 
-export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const useLoginForm = () => {
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  })
   const [errors, setErrors] = useState([])
   const [loading, setLoading] = useState(false)
 
-  const displayErrors = errors => errors.map(error => <p key={error.message}>{error.message}</p>)
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (isFormValid()) {
+    if (isFormValid(form)) {
       setErrors([])
       setLoading(true)
 
       try {
-        const signedInUser = await firebase
+        await firebase
           .auth()
-          .signInWithEmailAndPassword(email, password)
-
-        console.log(signedInUser)
+          .signInWithEmailAndPassword(form.email, form.password)
       } catch (err) {
-        console.error(err)
-        setErrors((prevErrors) => [...prevErrors, err])
+        setErrors((prevErrors) => prevErrors.concat(err))
       } finally {
         setLoading(false)
       }
     }
   }
 
-  const isFormValid = () => {
+  const handleFormChange = (event) => {
+    event.persist()
+    setForm((prevForm) => ({
+      ...prevForm,
+      [event.target.name]: event.target.value,
+    }))
+  }
+
+  const isFormValid = ({ email, password }) => {
     return email && password;
   }
 
+  return {
+    form,
+    errors,
+    loading,
+
+    handleFormChange,
+    handleSubmit,
+  }
+}
+
+export default function Login() {
+  const { form, errors, loading, handleFormChange, handleSubmit } = useLoginForm();
+  const { email, password } = form;
+
+  const displayErrors = errors => errors.map(error => <p key={error.message}>{error.message}</p>)
   const handleInputError = (errors, inputName) => {
     return errors.some(error => error.message.toLowerCase().includes(inputName))
       ? "error"
@@ -66,7 +86,7 @@ export default function Login() {
               icon="mail"
               iconPosition="left"
               placeholder="Email"
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={handleFormChange}
               value={email}
               className={handleInputError(errors, 'email')}
               type="email"
@@ -77,7 +97,7 @@ export default function Login() {
               icon="lock"
               iconPosition="left"
               placeholder="Password"
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={handleFormChange}
               value={password}
               className={handleInputError(errors, 'password')}
               type="password"

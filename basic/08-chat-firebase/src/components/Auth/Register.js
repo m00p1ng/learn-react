@@ -13,16 +13,18 @@ import {
 
 import firebase from '../../firebase';
 
-export default function Register() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+const useRegisterForm = () => {
   const [errors, setErrors] = useState([])
   const [loading, setLoading] = useState(false)
   const userRef = useRef(firebase.database().ref('users'))
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    passwordConfirmation: "",
+  })
 
-  const isFormValid = () => {
+  const isFormValid = ({ username, email, password, passwordConfirmation }) => {
     let error
 
     if (isFormEmpty({ username, email, password, passwordConfirmation })) {
@@ -52,11 +54,19 @@ export default function Register() {
     }
   }
 
-  const displayErrors = errors => errors.map(error => <p key={error.message}>{error.message}</p>)
+  const handleFormChange = (event) => {
+    event.persist()
+    setForm((prevForm) => ({
+      ...prevForm,
+      [event.target.name]: event.target.value,
+    }))
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (isFormValid()) {
+    const { username, email, password } = form
+
+    if (isFormValid(form)) {
       setErrors([])
       setLoading(true)
       try {
@@ -64,16 +74,13 @@ export default function Register() {
           .auth()
           .createUserWithEmailAndPassword(email, password)
 
-        console.log(createdUser)
         await createdUser.user.updateProfile({
           displayName: username,
           photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
         })
 
         await saveUser(createdUser)
-        console.log('user saved')
       } catch (err) {
-        console.log(err)
         setErrors((prevErrors) => [...prevErrors, err])
       } finally {
         setLoading(false)
@@ -81,17 +88,32 @@ export default function Register() {
     }
   }
 
-  const handleInputError = (errors, inputName) => {
-    return errors.some(error => error.message.toLowerCase().includes(inputName))
-      ? "error"
-      : ""
-  }
-
   const saveUser = (createdUser) => {
     return userRef.current.child(createdUser.user.uid).set({
       name: createdUser.user.displayName,
       avatar: createdUser.user.photoURL,
     })
+  }
+
+  return {
+    form,
+    errors,
+    loading,
+
+    handleFormChange,
+    handleSubmit,
+  }
+}
+
+export default function Register() {
+  const { form, errors, loading, handleFormChange, handleSubmit } = useRegisterForm();
+  const { username, email, password, passwordConfirmation } = form;
+
+  const displayErrors = errors => errors.map(error => <p key={error.message}>{error.message}</p>)
+  const handleInputError = (errors, inputName) => {
+    return errors.some(error => error.message.toLowerCase().includes(inputName))
+      ? "error"
+      : ""
   }
 
   return (
@@ -109,7 +131,7 @@ export default function Register() {
               icon="user"
               iconPosition="left"
               placeholder="Username"
-              onChange={(event) => setUsername(event.target.value)}
+              onChange={handleFormChange}
               value={username}
               type="text"
             />
@@ -119,7 +141,7 @@ export default function Register() {
               icon="mail"
               iconPosition="left"
               placeholder="Email"
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={handleFormChange}
               value={email}
               className={handleInputError(errors, 'email')}
               type="email"
@@ -130,7 +152,7 @@ export default function Register() {
               icon="lock"
               iconPosition="left"
               placeholder="Password"
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={handleFormChange}
               value={password}
               className={handleInputError(errors, 'password')}
               type="password"
@@ -141,12 +163,19 @@ export default function Register() {
               icon="repeat"
               iconPosition="left"
               placeholder="Password Confirmation"
-              onChange={(event) => setPasswordConfirmation(event.target.value)}
+              onChange={handleFormChange}
               value={passwordConfirmation}
               className={handleInputError(errors, 'password')}
               type="password"
             />
-            <Button className={loading ? 'loading' : ''} color="orange" fluid size="large">Submit</Button>
+            <Button
+              className={loading ? 'loading' : ''}
+              color="orange"
+              fluid
+              size="large"
+            >
+              Submit
+            </Button>
           </Segment>
         </Form>
         {errors.length > 0 && (

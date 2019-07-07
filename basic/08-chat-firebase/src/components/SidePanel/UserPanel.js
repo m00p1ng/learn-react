@@ -5,9 +5,7 @@ import firebase from "../../firebase"
 
 function UserPanel({ currentUser }) {
   const handleSignOut = () => {
-    firebase
-      .auth()
-      .signOut()
+    firebase.auth().signOut()
   }
 
   const dropdownOptions = () => [
