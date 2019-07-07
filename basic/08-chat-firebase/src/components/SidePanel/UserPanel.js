@@ -39,7 +39,7 @@ function UserPanel({ currentUser }) {
             <Dropdown
               trigger={
                 <span>
-                  <Image src={currentUser.photoURL} space="right" avatar />
+                  <Image src={currentUser.photoURL} space="right" avatar />{' '}
                   {currentUser.displayName}
                 </span>
               }
