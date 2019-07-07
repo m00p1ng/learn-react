@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import uuidv4 from 'uuidv4'
 import { Segment, Button, Input } from 'semantic-ui-react'
 
@@ -77,54 +77,48 @@ const useMessage = ({ messageRef, currentChannel }) => {
   }
 }
 
-const useFileUpload = ({ messageRef, currentChannel }) => {
+const useFileUpload = ({ messageRef, currentChannel, currentUser }) => {
   const [uploadState, setUploadState] = useState('')
-  const [uploadTask, setUploadTask] = useState(null)
   const [percentUploaded, setPercentUploaded] = useState(0)
   const [errors, setErrors] = useState([])
   const storageRef = firebase.storage().ref()
 
   const sendFileMessage = async (fileUrl, ref, pathToUpload) => {
-    try {
-      await ref
-        .child(pathToUpload)
-        .push()
-        .set(createMessage(fileUrl))
-      setUploadState('done')
-    } catch (err) {
-      setErrors((prevError) => prevError.concat(err))
-    }
-  }
-
-  useEffect(() => {
-    if (uploadTask !== null) {
-      uploadTask.on('state_changed', (snap) => {
-        const percent = Math.round(snap.bytesTransferred / snap.totalBytes) * 100
-        setPercentUploaded(percent)
-      }, (err) => {
-        console.error(err)
-        setErrors((prevErrors) => prevErrors.concat(err))
-        setUploadState('error')
-        setUploadTask(null)
-      }, async () => {
-        try {
-          const pathToUpload = currentChannel.id
-          const ref = messageRef
-          const downloadURL = await uploadTask.snapshot.ref.getDownloadURL()
-          sendFileMessage(downloadURL, ref, pathToUpload)
-        } catch (err) {
-          setErrors((prevErrors) => prevErrors.concat(err))
-          setUploadState('error')
-          setUploadTask(null)
-        }
+    ref.child(pathToUpload)
+      .push()
+      .set(createMessage({ currentUser, fileUrl }))
+      .then(() => {
+        setUploadState('done')
       })
-    }
-  })
+      .catch((err) => {
+        setErrors((prevError) => prevError.concat(err))
+      })
+  }
 
   const uploadFile = (file, metadata) => {
     const filePath = `chat/public/${uuidv4()}.jpg`
     setUploadState('uploading')
-    setUploadTask(storageRef.child(filePath).put(file, metadata))
+    const uploadTask = storageRef.child(filePath).put(file, metadata)
+
+    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, (snap) => {
+      const percent = Math.round(snap.bytesTransferred / snap.totalBytes) * 100
+      setPercentUploaded(percent)
+    }, (err) => {
+      setErrors((prevErrors) => prevErrors.concat(err))
+      setUploadState('error')
+    }, () => {
+      console.log("IME HERER")
+      const pathToUpload = currentChannel.id
+      const ref = messageRef
+      uploadTask.snapshot.ref.getDownloadURL()
+        .then((downloadURL) => {
+          sendFileMessage(downloadURL, ref, pathToUpload)
+        })
+        .catch((err) => {
+          setErrors((prevErrors) => prevErrors.concat(err))
+          setUploadState('error')
+        })
+    })
   }
 
   return {
@@ -147,7 +141,10 @@ function MessageForm({ messageRef, currentChannel, currentUser }) {
     sendMessage,
   } = useMessage({ messageRef, currentChannel, currentUser })
   const { modal, openModal, closeModal } = useModal()
-  const { errors: uploadErrors, uploadFile } = useFileUpload({ messageRef, currentChannel })
+  const {
+    errors: uploadErrors,
+    uploadFile,
+  } = useFileUpload({ messageRef, currentChannel, currentUser })
 
   useEffect(() => {
     setErrors([
