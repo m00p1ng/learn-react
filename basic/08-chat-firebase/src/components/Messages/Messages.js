@@ -6,8 +6,7 @@ import MessagesHeader from './MessagesHeader'
 import MessageForm from './MessageForm'
 import Message from './Message'
 
-export default function Messages({ currentChannel, currentUser }) {
-  const [messageRef] = useState(firebase.database().ref('messages'))
+const useMessages = ({ messageRef, currentChannel, currentUser }) => {
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -31,6 +30,16 @@ export default function Messages({ currentChannel, currentUser }) {
         setLoading(false)
       })
   }
+
+  return {
+    messages,
+    loading,
+  }
+}
+
+function Messages({ currentChannel, currentUser }) {
+  const messageRef = firebase.database().ref('messages')
+  const { messages } = useMessages({ messageRef, currentUser, currentChannel })
 
   const displayMessages = (messages) => (
     messages.length > 0 && messages.map((message) => (
@@ -60,3 +69,5 @@ export default function Messages({ currentChannel, currentUser }) {
     </>
   )
 }
+
+export default Messages

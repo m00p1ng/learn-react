@@ -105,7 +105,7 @@ const useRegisterForm = () => {
   }
 }
 
-export default function Register() {
+function Register() {
   const { form, errors, loading, handleFormChange, handleSubmit } = useRegisterForm();
   const { username, email, password, passwordConfirmation } = form;
 
@@ -191,3 +191,5 @@ export default function Register() {
     </Grid >
   )
 }
+
+export default Register

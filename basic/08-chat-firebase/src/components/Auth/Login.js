@@ -60,7 +60,7 @@ const useLoginForm = () => {
   }
 }
 
-export default function Login() {
+function Login() {
   const { form, errors, loading, handleFormChange, handleSubmit } = useLoginForm();
   const { email, password } = form;
 
@@ -118,3 +118,5 @@ export default function Login() {
     </Grid >
   )
 }
+
+export default Login

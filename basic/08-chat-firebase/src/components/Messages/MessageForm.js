@@ -3,7 +3,7 @@ import { Segment, Button, Input } from 'semantic-ui-react'
 
 import firebase from '../../firebase'
 
-function MessageForm({ messageRef, currentChannel, currentUser }) {
+const useMessage = ({ currentUser, messageRef, currentChannel }) => {
   const [message, setMessage] = useState([])
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState([])
@@ -45,6 +45,25 @@ function MessageForm({ messageRef, currentChannel, currentUser }) {
       setErrors((prevErrors) => prevErrors.concat({ message: "Add a message" }))
     }
   }
+
+  return {
+    loading,
+    errors,
+    message,
+
+    handleChange,
+    sendMessage,
+  }
+}
+
+function MessageForm({ messageRef, currentChannel, currentUser }) {
+  const {
+    loading,
+    errors,
+    message,
+    handleChange,
+    sendMessage,
+  } = useMessage({ messageRef, currentChannel, currentUser })
 
   return (
     <Segment className="message__form">
