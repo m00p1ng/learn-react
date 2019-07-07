@@ -1,13 +1,26 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { connect } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { Menu, Icon, Modal, Form, Input, Button } from 'semantic-ui-react';
 
 import { setCurrentChannel } from '../../actions'
 import firebase from '../../firebase'
 
-function Channels({ currentUser, setCurrentChannel }) {
-  const [channels, setChannels] = useState([])
+const useModal = () => {
   const [modal, setModal] = useState(false)
+
+  const openModal = () => setModal(true)
+  const closeModal = () => setModal(false)
+
+  return {
+    modal,
+
+    openModal,
+    closeModal,
+  }
+}
+
+const useChannel = ({ currentUser, closeModal }) => {
+  const [channels, setChannels] = useState([])
   const [firstLoad, setFirstLoad] = useState(true)
   const [activeChannel, setActiveChannel] = useState("")
   const [form, setForm] = useState({
@@ -15,32 +28,29 @@ function Channels({ currentUser, setCurrentChannel }) {
     channelDetails: "",
   })
 
+  const dispatch = useDispatch()
   const channelsRef = useRef(firebase.database().ref('channels'))
 
   useEffect(() => {
-    addListeners()
+    channelsRef.current.on('child_added', snap => {
+      setChannels((prevChannels) => [...prevChannels, snap.val()])
+    })
 
     return removeListeners
   }, [])
 
-  const addListeners = () => {
-    channelsRef.current.on('child_added', snap => {
-      setChannels((prevChannels) => [...prevChannels, snap.val()])
-      if (firstLoad && channels.length > 0) {
-        const firstChannel = channels[0]
-        setFirstLoad(false)
-        setCurrentChannel(firstChannel)
-        setActiveChannel(firstChannel.id)
-      }
-    })
-  }
+  useEffect(() => {
+    if (firstLoad && channels.length > 0) {
+      const firstChannel = channels[0]
+      setFirstLoad(false)
+      dispatch(setCurrentChannel(firstChannel))
+      setActiveChannel(firstChannel.id)
+    }
+  }, [channels, dispatch, firstLoad])
 
   const removeListeners = () => {
     channelsRef.current.off()
   }
-
-  const openModal = () => setModal(true)
-  const closeModal = () => setModal(false)
 
   const handleChange = (event) => {
     event.persist()
@@ -83,10 +93,33 @@ function Channels({ currentUser, setCurrentChannel }) {
     closeModal()
   }
 
+  const isFormValid = ({ channelName, channelDetails }) => channelName && channelDetails
+
   const changeChannel = (channel) => {
     setActiveChannel(channel.id)
-    setCurrentChannel(channel)
+    dispatch(setCurrentChannel(channel))
   }
+
+  return {
+    channels,
+    activeChannel,
+
+    changeChannel,
+    handleChange,
+    handleSubmit,
+  }
+}
+
+function Channels({ currentUser }) {
+  const { modal, openModal, closeModal } = useModal()
+  const {
+    channels,
+    activeChannel,
+
+    changeChannel,
+    handleChange,
+    handleSubmit,
+  } = useChannel({ currentUser, closeModal })
 
   const displayChannels = (channels) => (
     channels.length > 0 &&
@@ -102,8 +135,6 @@ function Channels({ currentUser, setCurrentChannel }) {
       </Menu.Item>
     ))
   )
-
-  const isFormValid = ({ channelName, channelDetails }) => channelName && channelDetails
 
   return (
     <>
@@ -153,4 +184,4 @@ function Channels({ currentUser, setCurrentChannel }) {
   )
 }
 
-export default connect(null, { setCurrentChannel })(Channels)
+export default Channels
