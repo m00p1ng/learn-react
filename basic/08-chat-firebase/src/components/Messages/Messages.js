@@ -9,6 +9,7 @@ import Message from './Message'
 const useMessages = ({ messageRef, currentChannel, currentUser }) => {
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(true)
+  const [progressBar, setProgressBar] = useState(false)
 
   useEffect(() => {
     if (currentChannel && currentUser) {
@@ -34,12 +35,15 @@ const useMessages = ({ messageRef, currentChannel, currentUser }) => {
   return {
     messages,
     loading,
+    progressBar,
+
+    setProgressBar,
   }
 }
 
 function Messages({ currentChannel, currentUser }) {
   const messageRef = firebase.database().ref('messages')
-  const { messages } = useMessages({ messageRef, currentUser, currentChannel })
+  const { messages, progressBar, setProgressBar } = useMessages({ messageRef, currentUser, currentChannel })
 
   const displayMessages = (messages) => (
     messages.length > 0 && messages.map((message) => (
@@ -51,12 +55,20 @@ function Messages({ currentChannel, currentUser }) {
     ))
   )
 
+  const isProgressBarVisible = (percent) => {
+    if (percent > 0) {
+      setProgressBar(true)
+    } else {
+      setProgressBar(false)
+    }
+  }
+
   return (
     <>
       <MessagesHeader />
 
       <Segment>
-        <Comment.Group className="messages">
+        <Comment.Group className={progressBar ? 'messages__progress' : 'messages'}>
           {displayMessages(messages)}
         </Comment.Group>
 
@@ -65,6 +77,7 @@ function Messages({ currentChannel, currentUser }) {
         messageRef={messageRef}
         currentUser={currentUser}
         currentChannel={currentChannel}
+        isProgressBarVisible={isProgressBarVisible}
       />
     </>
   )

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import uuidv4 from 'uuidv4'
 import { Segment, Button, Input } from 'semantic-ui-react'
 
+import ProgressBar from './ProgressBar'
 import FileModal from './FileModal'
 import firebase from '../../firebase'
 
@@ -107,7 +108,6 @@ const useFileUpload = ({ messageRef, currentChannel, currentUser }) => {
       setErrors((prevErrors) => prevErrors.concat(err))
       setUploadState('error')
     }, () => {
-      console.log("IME HERER")
       const pathToUpload = currentChannel.id
       const ref = messageRef
       uploadTask.snapshot.ref.getDownloadURL()
@@ -130,7 +130,7 @@ const useFileUpload = ({ messageRef, currentChannel, currentUser }) => {
   }
 }
 
-function MessageForm({ messageRef, currentChannel, currentUser }) {
+function MessageForm({ messageRef, currentChannel, currentUser, isProgressBarVisible }) {
   const [errors, setErrors] = useState([])
   const {
     loading,
@@ -143,6 +143,9 @@ function MessageForm({ messageRef, currentChannel, currentUser }) {
   const { modal, openModal, closeModal } = useModal()
   const {
     errors: uploadErrors,
+    uploadState,
+    percentUploaded,
+
     uploadFile,
   } = useFileUpload({ messageRef, currentChannel, currentUser })
 
@@ -153,6 +156,10 @@ function MessageForm({ messageRef, currentChannel, currentUser }) {
     ])
   }, [messageErrors, uploadErrors])
 
+
+  useEffect(() => {
+    isProgressBarVisible(percentUploaded)
+  }, [isProgressBarVisible, percentUploaded])
 
   return (
     <Segment className="message__form">
@@ -183,12 +190,16 @@ function MessageForm({ messageRef, currentChannel, currentUser }) {
           labelPosition="right"
           icon="cloud upload"
         />
-        <FileModal
-          modal={modal}
-          closeModal={closeModal}
-          uploadFile={uploadFile}
-        />
       </Button.Group>
+      <FileModal
+        modal={modal}
+        closeModal={closeModal}
+        uploadFile={uploadFile}
+      />
+      <ProgressBar
+        uploadState={uploadState}
+        percentUploaded={percentUploaded}
+      />
     </Segment>
   )
 }
