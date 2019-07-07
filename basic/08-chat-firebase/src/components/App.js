@@ -23,7 +23,7 @@ function App({ setUser, clearUser, isLoading }) {
         navigate('/login')
       }
     })
-  }, [])
+  }, [setUser, clearUser])
 
   return isLoading
     ? <Spinner />
