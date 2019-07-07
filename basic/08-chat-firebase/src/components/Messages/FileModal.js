@@ -18,7 +18,6 @@ const useFile = ({ closeModal, uploadFile }) => {
 
   const sendFile = () => {
     if (file !== null) {
-      console.log(file)
       if (isAuthorized(file.name)) {
         const metadata = {
           contentType: mime.lookup(file.name)
@@ -48,7 +47,7 @@ function FileModal({ modal, closeModal, uploadFile }) {
   const { addFile, sendFile } = useFile({ closeModal, uploadFile })
 
   return (
-    <Modal basic open={modal}>
+    <Modal open={modal}>
       <Modal.Header>Select an Image File</Modal.Header>
       <Modal.Content>
         <Input

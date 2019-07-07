@@ -24,6 +24,10 @@ function UserPanel({ currentUser }) {
     }
   ]
 
+  if(!currentUser) {
+    return null
+  }
+
   return (
     <Grid style={{ background: "#4c3c4c" }}>
       <Grid.Column>

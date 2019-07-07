@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { Menu, Icon, Modal, Form, Input, Button } from 'semantic-ui-react';
 
-import { setCurrentChannel } from '../../actions'
+import { setCurrentChannel, setPrivateChannel } from '../../actions'
 import firebase from '../../firebase'
 
 const useModal = () => {
@@ -98,6 +98,7 @@ const useChannel = ({ currentUser, closeModal }) => {
   const changeChannel = (channel) => {
     setActiveChannel(channel.id)
     dispatch(setCurrentChannel(channel))
+    dispatch(setPrivateChannel(false))
   }
 
   return {
@@ -138,7 +139,7 @@ function Channels({ currentUser }) {
 
   return (
     <>
-      <Menu.Menu style={{ paddingBottom: '2em' }}>
+      <Menu.Menu className="menu">
         <Menu.Item>
           <span>
             <Icon name="exchange" /> Channels{' '}
@@ -148,7 +149,7 @@ function Channels({ currentUser }) {
         {displayChannels(channels)}
       </Menu.Menu>
 
-      <Modal basic open={modal} onClose={closeModal}>
+      <Modal open={modal} onClose={closeModal}>
         <Modal.Header>Add a Channel</Modal.Header>
         <Modal.Content>
           <Form>

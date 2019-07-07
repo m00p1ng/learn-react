@@ -37,7 +37,7 @@ const useModal = () => {
   }
 }
 
-const useMessage = ({ messageRef, currentChannel }) => {
+const useMessage = ({ getMessagesRef, currentChannel, currentUser }) => {
   const [message, setMessage] = useState([])
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState([])
@@ -50,16 +50,15 @@ const useMessage = ({ messageRef, currentChannel }) => {
     if (message) {
       setLoading(true)
       try {
-        await messageRef
+        await getMessagesRef()
           .child(currentChannel.id)
           .push()
-          .set(createMessage())
+          .set(createMessage({ currentUser, message }))
 
         setMessage('')
         setErrors([])
       } catch (error) {
         setErrors((prevErrors) => prevErrors.concat(error))
-        console.error(error)
       } finally {
         setLoading(false)
       }
@@ -78,7 +77,7 @@ const useMessage = ({ messageRef, currentChannel }) => {
   }
 }
 
-const useFileUpload = ({ messageRef, currentChannel, currentUser }) => {
+const useFileUpload = ({ getMessagesRef, currentChannel, currentUser, isPrivateChannel }) => {
   const [uploadState, setUploadState] = useState('')
   const [percentUploaded, setPercentUploaded] = useState(0)
   const [errors, setErrors] = useState([])
@@ -96,8 +95,15 @@ const useFileUpload = ({ messageRef, currentChannel, currentUser }) => {
       })
   }
 
+  const getPath = () => {
+    if (isPrivateChannel) {
+      return `chat/private-${currentChannel.id}`
+    } else {
+      return 'chat/public'
+    }
+  }
   const uploadFile = (file, metadata) => {
-    const filePath = `chat/public/${uuidv4()}.jpg`
+    const filePath = `${getPath()}/${uuidv4()}.jpg`
     setUploadState('uploading')
     const uploadTask = storageRef.child(filePath).put(file, metadata)
 
@@ -109,7 +115,7 @@ const useFileUpload = ({ messageRef, currentChannel, currentUser }) => {
       setUploadState('error')
     }, () => {
       const pathToUpload = currentChannel.id
-      const ref = messageRef
+      const ref = getMessagesRef()
       uploadTask.snapshot.ref.getDownloadURL()
         .then((downloadURL) => {
           sendFileMessage(downloadURL, ref, pathToUpload)
@@ -130,7 +136,13 @@ const useFileUpload = ({ messageRef, currentChannel, currentUser }) => {
   }
 }
 
-function MessageForm({ messageRef, currentChannel, currentUser, isProgressBarVisible }) {
+function MessageForm({
+  currentChannel,
+  currentUser,
+  isProgressBarVisible,
+  isPrivateChannel,
+  getMessagesRef,
+}) {
   const [errors, setErrors] = useState([])
   const {
     loading,
@@ -139,7 +151,7 @@ function MessageForm({ messageRef, currentChannel, currentUser, isProgressBarVis
 
     handleChange,
     sendMessage,
-  } = useMessage({ messageRef, currentChannel, currentUser })
+  } = useMessage({ getMessagesRef, currentChannel, currentUser })
   const { modal, openModal, closeModal } = useModal()
   const {
     errors: uploadErrors,
@@ -147,7 +159,7 @@ function MessageForm({ messageRef, currentChannel, currentUser, isProgressBarVis
     percentUploaded,
 
     uploadFile,
-  } = useFileUpload({ messageRef, currentChannel, currentUser })
+  } = useFileUpload({ getMessagesRef, currentChannel, currentUser, isPrivateChannel })
 
   useEffect(() => {
     setErrors([
@@ -186,6 +198,7 @@ function MessageForm({ messageRef, currentChannel, currentUser, isProgressBarVis
         <Button
           color="teal"
           onClick={openModal}
+          disabled={uploadState === 'uploading'}
           content="Upload Media"
           labelPosition="right"
           icon="cloud upload"
