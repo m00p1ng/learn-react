@@ -8,16 +8,19 @@ import Register from './Auth/Register';
 import Spinner from './Spinner';
 import firebase from '../firebase';
 
-import { setUser } from '../actions'
+import { setUser, clearUser } from '../actions'
 
 import './App.css';
 
-function App({ setUser, isLoading }) {
+function App({ setUser, clearUser, isLoading }) {
   useEffect(() => {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         setUser(user)
         navigate('/')
+      } else {
+        clearUser()
+        navigate('/login')
       }
     })
   }, [])
@@ -41,5 +44,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps,
-  { setUser }
+  { setUser, clearUser }
 )(App);
