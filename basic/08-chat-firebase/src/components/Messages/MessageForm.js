@@ -166,11 +166,14 @@ function MessageForm({
       ...messageErrors,
       ...uploadErrors,
     ])
+
+    return () => { }
   }, [messageErrors, uploadErrors])
 
 
   useEffect(() => {
     isProgressBarVisible(percentUploaded)
+    return () => { }
   }, [isProgressBarVisible, percentUploaded])
 
   return (
