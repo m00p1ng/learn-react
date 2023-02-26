@@ -1,11 +1,12 @@
 import { useState } from "react"
 import UserForm from "./UserForm"
 import UserList from "./UserList"
+import User from './models/User'
 
 function App() {
-  const [users, setUsers] = useState([])
+  const [users, setUsers] = useState<User[]>([])
 
-  const onUserAdd = (user) => {
+  const onUserAdd = (user: User) => {
     setUsers([...users, user])
   }
   return (

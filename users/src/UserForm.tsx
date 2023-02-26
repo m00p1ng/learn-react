@@ -1,11 +1,16 @@
-import { useState } from "react"
+import { SyntheticEvent, useState } from "react"
+import User from "./models/User"
 
-function UserForm({ onUserAdd }) {
+interface UserFormProps {
+  onUserAdd(user: User): void
+}
+
+function UserForm({ onUserAdd }: UserFormProps) {
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = (event: SyntheticEvent) => {
+    event.preventDefault()
 
     onUserAdd({ name, email })
   }

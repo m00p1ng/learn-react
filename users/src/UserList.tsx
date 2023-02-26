@@ -1,4 +1,10 @@
-function UserList({ users }) {
+import User from "./models/User"
+
+interface UserListProps {
+  users: User[]
+}
+
+function UserList({ users }: UserListProps) {
   const renderedUsers = users.map(user => {
     return (
       <tr key={user.name}>
