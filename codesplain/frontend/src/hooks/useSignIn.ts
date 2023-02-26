@@ -3,7 +3,7 @@ import axios from 'axios';
 
 async function signIn(_: any, { arg }: any) {
   try {
-    const { data } = await axios.post('/api/auth/signin', arg);
+    const { data } = await axios.post(`http://localhost:8000/api/auth/signin`, arg);
     return data;
   } catch (err: any) {
     if (err.response) {

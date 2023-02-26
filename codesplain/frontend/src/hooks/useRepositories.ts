@@ -2,7 +2,7 @@ import axios from 'axios';
 import useSWR from 'swr';
 
 async function repositoriesFetcher([url, searchQuery]: [string, string]) {
-  const res = await axios.get(url, {
+  const res = await axios.get(`http://localhost:8000${url}`, {
     params: {
       q: searchQuery || '',
       per_page: 10,

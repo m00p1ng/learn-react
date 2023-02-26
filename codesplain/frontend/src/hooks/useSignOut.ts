@@ -3,8 +3,8 @@ import axios from 'axios';
 
 async function signOut(path: string) {
   try {
-    const { data } = await axios.get(path);
-    mutate('/api/user');
+    const { data } = await axios.get(`http://localhost:8000${path}`);
+    mutate(`${import.meta.env.REACT_APP_API}/api/user`);
     return data;
   } catch (err: any) {
     if (err.response) {

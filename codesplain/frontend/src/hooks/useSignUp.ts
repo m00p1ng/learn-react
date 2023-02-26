@@ -3,7 +3,7 @@ import axios from 'axios';
 
 async function signUp(_: any, { arg }: any) {
   try {
-    const { data } = await axios.post('/api/auth/signup', arg);
+    const { data } = await axios.post(`http://localhost:8000/api/auth/signup`, arg);
 
     return data;
   } catch (err: any) {

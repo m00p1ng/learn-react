@@ -2,10 +2,12 @@ import './env';
 import express from 'express';
 import cookieSession from 'cookie-session';
 import routes from './src/routes';
+import cors from 'cors'
 
 const initServer = async () => {
   const app = express();
 
+  app.use(cors())
   app.use(express.json());
   app.use(
     cookieSession({

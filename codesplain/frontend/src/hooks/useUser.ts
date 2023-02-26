@@ -2,7 +2,7 @@ import axios from 'axios';
 import useSWR from 'swr';
 
 async function userFetcher(url: string) {
-  const res = await axios.get(url);
+  const res = await axios.get(`http://localhost:8000${url}`);
 
   return res.data;
 }

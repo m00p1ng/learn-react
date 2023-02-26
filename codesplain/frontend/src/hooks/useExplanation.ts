@@ -10,7 +10,7 @@ interface UserExplanationOptions {
 type ExplanationFetcherOptions = [string, UserExplanationOptions]
 
 async function explanationFetcher([url, { text, path }]: ExplanationFetcherOptions) {
-  const { data } = await axios.post(url, {
+  const { data } = await axios.post(`http://localhost:8000${url}`, {
     text,
     language: getLangFromPath(path),
   });

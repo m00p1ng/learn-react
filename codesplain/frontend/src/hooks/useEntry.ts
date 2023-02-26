@@ -9,7 +9,7 @@ interface UseEntryOptions {
 }
 
 async function filesFetcher(url: string) {
-  const { data } = await axios.get(url);
+  const { data } = await axios.get(`http://localhost:8000${url}`);
 
   if (data.type === 'file') {
     return data;
