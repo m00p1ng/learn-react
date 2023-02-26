@@ -21,7 +21,7 @@ function UserList({ users }: UserListProps) {
           <th>Email</th>
         </tr>
       </thead>
-      <tbody>{renderedUsers}</tbody>
+      <tbody data-testid="users">{renderedUsers}</tbody>
     </table>
   )
 }
