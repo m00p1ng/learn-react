@@ -1,7 +1,16 @@
 import { StarIcon } from '@primer/octicons-react';
 
-function RepositoriesSummary({ repository }) {
-  const { stargazers_count, open_issues, forks } = repository;
+interface RepositoriesSummaryProps {
+  repository: {
+    stargazers_count: number
+    open_issues: number
+    forks: number
+    language: string
+  }
+}
+
+function RepositoriesSummary({ repository }: RepositoriesSummaryProps) {
+  const { stargazers_count, open_issues, forks, language } = repository;
 
   return (
     <div className="flex flex-row gap-4 text-gray-700">
@@ -10,6 +19,7 @@ function RepositoriesSummary({ repository }) {
       </div>
       <div>{open_issues} issues need help</div>
       <div>{forks} Forks</div>
+      <div>{language}</div>
     </div>
   );
 }

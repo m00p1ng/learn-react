@@ -3,7 +3,7 @@ import axios from 'axios';
 import useSWR from 'swr';
 
 async function fileFetcher(url: string) {
-  const res = await axios.get(`http://localhost:8000/${url}`);
+  const res = await axios.get(`http://localhost:8000${url}`);
 
   return res.data;
 }
