@@ -1,4 +1,5 @@
 import "@exuanbo/file-icons-js/dist/css/file-icons.css";
+// @ts-ignore
 import icons from "@exuanbo/file-icons-js/dist/js/file-icons";
 import { useEffect, useState } from "react";
 import classNames from "classnames";
@@ -14,7 +15,7 @@ function FileIcon({ name, className }: FileIconProps) {
   useEffect(() => {
     icons
       .getClass(name)
-      .then((k) => setKlass(k))
+      .then((k: string) => setKlass(k))
       .catch(() => null);
   }, [name]);
 
