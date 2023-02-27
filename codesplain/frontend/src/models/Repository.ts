@@ -1,4 +1,5 @@
 interface Repository {
+  id?: number
   full_name?: string
   language: string
   description?: string

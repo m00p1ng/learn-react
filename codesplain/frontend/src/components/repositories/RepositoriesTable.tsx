@@ -1,9 +1,16 @@
 import { Link } from 'react-router-dom';
+import Repository from '../../models/Repository';
 
-function RepositoriesTable({ label, repositories, id }) {
+interface RepositoriesTableProps {
+  id?: string
+  label: string
+  repositories: Repository[]
+}
+
+function RepositoriesTable({ label, repositories, id }: RepositoriesTableProps) {
   const rendered =
     repositories &&
-    repositories.map((repo, i) => {
+    repositories.map((repo, i: number) => {
       return (
         <div key={repo.id} className="p-0.5">
           <Link
