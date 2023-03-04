@@ -1,7 +1,9 @@
 import Link from 'next/link'
+import Image from 'next/image';
 import { RiSearch2Line } from 'react-icons/ri'
 import { FaOpencart } from 'react-icons/fa'
 import { useSelector } from "react-redux";
+
 import styles from './styles.module.scss'
 
 export default function Main() {
@@ -12,7 +14,7 @@ export default function Main() {
       <div className={styles.main__container}>
         <Link href="/">
           <span className={styles.logo}>
-            <img src="../../../logo.png" alt="logo" />
+            <Image src="/logo.png" alt="logo" width={170} height={50} />
           </span>
         </Link>
         <div className={styles.search}>

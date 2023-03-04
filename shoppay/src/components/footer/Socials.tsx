@@ -1,4 +1,3 @@
-import styles from "./styles.module.scss";
 import { FaFacebookF, FaTiktok } from "react-icons/fa";
 import {
   BsInstagram,
@@ -7,6 +6,8 @@ import {
   BsPinterest,
   BsSnapchat,
 } from "react-icons/bs";
+
+import styles from "./styles.module.scss";
 
 export default function Socials() {
   return (

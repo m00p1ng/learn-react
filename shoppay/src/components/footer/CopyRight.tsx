@@ -1,7 +1,9 @@
 import Link from "next/link";
-import styles from "./styles.module.scss";
 import { IoLocationSharp } from "react-icons/io5";
+
 import Country from "@/types/country";
+
+import styles from "./styles.module.scss";
 
 interface CopyrightProps {
   country: Country;

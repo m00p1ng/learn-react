@@ -1,8 +1,9 @@
+import Country from '@/types/country'
 import Ad from './Ad'
 import Top from './Top'
-import styles from './styles.module.scss'
 import Main from './Main'
-import Country from '@/types/country'
+
+import styles from './styles.module.scss'
 
 interface HeaderProps {
   country: Country

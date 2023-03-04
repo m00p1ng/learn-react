@@ -1,13 +1,20 @@
-import '../styles/global.scss'
-import { Provider } from 'react-redux'
-import store from '@/store'
-import { PersistGate } from 'redux-persist/integration/react'
-import { persistStore } from 'redux-persist'
-let persistor = persistStore(store)
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
+import { SessionProvider } from "next-auth/react"
+import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/integration/react'
+import { persistStore } from 'redux-persist'
 
-export default function App({ Component, pageProps }: AppProps) {
+import store from '@/store'
+
+import '@/styles/global.scss'
+
+let persistor = persistStore(store)
+
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   return (
     <>
       <Head>
@@ -17,11 +24,13 @@ export default function App({ Component, pageProps }: AppProps) {
           content="Shoppay is a payment gateway for Shopify"
         />
       </Head>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <Component {...pageProps} />
-        </PersistGate>
-      </Provider>
+      <SessionProvider session={session}>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <Component {...pageProps} />
+          </PersistGate>
+        </Provider>
+      </SessionProvider>
     </>
   )
 }
