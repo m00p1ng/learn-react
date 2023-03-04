@@ -22,7 +22,7 @@ async function connectDb() {
     await mongoose.disconnect()
   }
 
-  const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/test';
+  const mongoUri = process.env.MONGODB_URI || '';
   const db = await mongoose.connect(mongoUri)
   console.log("New connection to the database")
   connection.isConnected = db.connections[0].readyState

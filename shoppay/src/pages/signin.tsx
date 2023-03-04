@@ -1,12 +1,16 @@
+import { NextPageContext } from 'next';
 import Link from 'next/link';
+import { Router } from 'next/router';
 import { useState } from 'react';
 import { ClientSafeProvider, getProviders, signIn } from 'next-auth/react';
 import { BiLeftArrowAlt } from 'react-icons/bi'
 import { Formik, Form, FormikProps } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 
 import Footer from "@/components/footer";
 import Header from "@/components/header";
+import DotLoaderSpinner from "@/components/loaders/dotLoader";
 
 import styles from "@/styles/signin.module.scss";
 import LoginInput from '@/components/inputs/loginInput';
@@ -41,6 +45,7 @@ const initialValues = {
 };
 
 export default function SignInPage({ providers }: SignInPageProps) {
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(initialValues);
   const {
     login_email,
@@ -81,15 +86,41 @@ export default function SignInPage({ providers }: SignInPageProps) {
       .required(
         "Enter a combination of at least six numbers,letters and punctuation marks(such as ! and &)."
       )
-      .min(6, "Password must be atleast 6 characters.")
+      .min(6, "Password must be at least 6 characters.")
       .max(36, "Password can't be more than 36 characters"),
     conf_password: Yup.string()
       .required("Confirm your password.")
       .oneOf([Yup.ref("password")], "Passwords must match."),
   });
 
+  const signUpHandler = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.post("/api/auth/signup", {
+        name,
+        email,
+        password,
+      });
+      setUser({ ...user, error: "", success: data.message });
+      setLoading(false);
+      setTimeout(async () => {
+        let options = {
+          redirect: false,
+          email: email,
+          password: password,
+        };
+        const res = await signIn("credentials", options);
+        Router.push("/");
+      }, 2000);
+    } catch (error) {
+      setLoading(false);
+      setUser({ ...user, success: "", error: error.response.data.message });
+    }
+  };
+
   return (
     <div>
+      {loading && <DotLoaderSpinner loading={loading} />}
       <Header country={{}} />
       <div className={styles.login}>
         <div className={styles.login__container}>
@@ -186,6 +217,7 @@ export default function SignInPage({ providers }: SignInPageProps) {
                 login_error,
               }}
               validationSchema={registerValidation}
+              onSubmit={() => signUpHandler()}
             >
               {(props: FormikProps<Values>) => (
                 <Form>
@@ -224,6 +256,12 @@ export default function SignInPage({ providers }: SignInPageProps) {
                 </Form>
               )}
             </Formik>
+            <div>
+              {success && <span className={styles.success}>{success}</span>}
+            </div>
+            <div>
+              {error && <span className={styles.error}>{error}</span>}
+            </div>
           </div>
         </div>
       </div>
@@ -232,7 +270,7 @@ export default function SignInPage({ providers }: SignInPageProps) {
   )
 }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps(_context: NextPageContext) {
   const providers = Object.values(await getProviders());
 
   return {
