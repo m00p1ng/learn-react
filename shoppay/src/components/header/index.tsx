@@ -2,12 +2,17 @@ import Ad from './Ad'
 import Top from './Top'
 import styles from './styles.module.scss'
 import Main from './Main'
+import Country from '@/types/country'
 
-export default function Header() {
+interface HeaderProps {
+  country: Country
+}
+
+export default function Header({ country }: HeaderProps) {
   return (
     <header className={styles.header}>
       <Ad />
-      <Top />
+      <Top country={country} />
       <Main />
     </header>
   )

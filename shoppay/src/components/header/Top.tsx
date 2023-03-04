@@ -8,8 +8,13 @@ import {
 import Link from 'next/link'
 import { useState } from 'react'
 import UserMenu from './UserMenu'
+import Country from '@/types/country'
 
-export default function Top() {
+interface TopProps {
+  country: Country
+}
+
+export default function Top({ country }: TopProps) {
   const [loggedIn, setLoggedIn] = useState(true)
   const [visible, setVisible] = useState(false);
 
@@ -19,7 +24,8 @@ export default function Top() {
         <div></div>
         <ul className={styles.top__list}>
           <li className={styles.li}>
-            <span>Thailand / USD</span>
+            <img src={country.flag} alt={country.name} />
+            <span>{country.name} / USD</span>
           </li>
           <li className={styles.li}>
             <MdSecurity />
